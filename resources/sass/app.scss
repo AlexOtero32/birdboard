@@ -1,1 +1,21 @@
-//
+// Variables
+@import "variables";
+
+@tailwind base;
+
+@tailwind components;
+
+.section {
+    @apply .px-4;
+}
+
+.button {
+    @apply bg-blue-300 text-white no-underline rounded-lg px-5 py-3;
+    box-shadow: 0 2px 7px 0 #b0eaff;
+}
+
+.card {
+    @apply bg-white rounded-lg py-5 shadow;
+}
+
+@tailwind utilities;
