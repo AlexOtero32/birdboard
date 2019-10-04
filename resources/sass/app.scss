@@ -10,8 +10,20 @@
 }
 
 .button {
-    @apply bg-blue-300 text-white no-underline rounded-lg px-5 py-3;
+    @apply bg-blue-500 text-white no-underline rounded-lg px-5 py-3;
     box-shadow: 0 2px 7px 0 #b0eaff;
+}
+
+.button:hover {
+    @apply bg-blue-400;
+}
+
+.button:focus {
+    @apply outline-none shadow-outline;
+}
+
+.button:active {
+    @apply bg-blue-600;
 }
 
 .card {

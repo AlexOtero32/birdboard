@@ -16,14 +16,13 @@
         <div class="md:w-3/4 px-3">
             <div class="mb-6">
                 <h2 class="text-gray-700 text-lg font-normal mb-3">Tareas</h2>
-                <div class="card px-4 mb-3">Lorem ipsum</div>
-                <div class="card px-4 mb-3">Lorem ipsum</div>
-                <div class="card px-4 mb-3">Lorem ipsum</div>
-                <div class="card px-4">Lorem ipsum</div>
+                @foreach ($project->tasks as $task)
+                <div class="card px-4 mb-3">{{ $task->body }}</div>
+                @endforeach
             </div>
             <div class="mb-6">
                 <h2 class="text-gray-700 text-lg font-normal mb-3">Notas generales</h2>
-                <textarea class="card px-4 w-full" style="min-height: 180px;">Lorem ipsum</textarea>
+                <textarea class="card px-4 w-full" style="min-height: 180px;">{{ $project->description }}</textarea>
             </div>
         </div>
         <div class="md:w-1/4 px-3">

@@ -13,12 +13,24 @@ class ProjectTest extends TestCase
 
     /**
      * @test
-     * @return void
      */
     public function it_has_a_path()
     {
         $project = factory('App\Project')->create();
 
         $this->assertEquals("/projects/{$project->id}", $project->path());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_add_a_task()
+    {
+        $project = factory('App\Project')->create();
+
+        $task = $project->addTask('Test task');
+
+        $this->assertCount(1, $project->tasks);
+        $this->assertTrue($project->tasks->contains($task));
     }
 }
