@@ -26,6 +26,10 @@
     @apply bg-blue-600;
 }
 
+.field {
+    @apply rounded p-3 bg-transparent border border-gray-300 w-full my-2;
+}
+
 .card {
     @apply bg-white rounded-lg py-5 shadow;
 }

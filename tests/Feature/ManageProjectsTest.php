@@ -44,29 +44,42 @@ class ManageProjectsTest extends TestCase
 
     /**
      * @test
+     */
+    public function guests_cannot_edit_projects()
+    {
+        $project = factory('App\Project')->create();
+
+        $this->get("{$project->path()}/edit")->assertRedirect('/login');
+    }
+
+    /**
+     * @test
      *
      */
     public function a_user_can_create_a_project()
     {
-
-        $this->withoutExceptionHandling();
-
         $this->signIn();
 
         $this->get('/projects/create')->assertStatus(200);
 
         $attributes = [
             'title' => $this->faker->sentence,
-            'description' => $this->faker->paragraph
+            'description' => $this->faker->sentence,
+            'notes' => 'General notes here'
         ];
 
         $response = $this->post('/projects', $attributes);
 
-        $response->assertRedirect(Project::where($attributes)->first()->path());
+        $project = Project::where($attributes)->first();
+
+        $response->assertRedirect($project->path());
 
         $this->assertDatabaseHas('projects', $attributes);
 
-        $this->get('/projects')->assertSee($attributes['title']);
+        $this->get($project->path())
+            ->assertSee($attributes['title'])
+            ->assertSee($attributes['description'])
+            ->assertSee($attributes['notes']);
     }
 
     /**
@@ -101,8 +114,6 @@ class ManageProjectsTest extends TestCase
     {
         $this->signIn();
 
-        $this->withoutExceptionHandling();
-
         $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
 
         $this->get($project->path())
@@ -125,10 +136,47 @@ class ManageProjectsTest extends TestCase
     /**
      * @test
      */
+    public function an_user_cannot_update_the_projects_of_others()
+    {
+        $this->signIn();
+
+        $project = factory('App\Project')->create();
+
+        $this->patch($project->path(), [
+            'notes' => 'Hello world'
+        ])->assertStatus(403);
+    }
+
+    /**
+     * @test
+     */
     public function a_project_belongs_to_an_owner()
     {
         $project = factory('App\Project')->create();
 
         $this->assertInstanceOf('App\User', $project->owner);
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_can_update_a_project()
+    {
+        $this->signIn();
+
+        $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
+
+        $this->get("{$project->path()}/edit")->assertOk();
+
+        $attributes = [
+            'title' => 'Nuevo título',
+            'description' => 'Nueva descripcion',
+            'notes' => 'Hello world'
+        ];
+
+        $this->patch($project->path(), $attributes)
+            ->assertRedirect($project->path());
+
+        $this->assertDatabaseHas('projects', $attributes);
     }
 }
