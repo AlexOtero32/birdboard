@@ -102,4 +102,20 @@ class RecordActivityTest extends TestCase
         $this->assertCount(4, $project->activity);
         $this->assertEquals('incompleted_task', $project->activity->last()->description);
     }
+
+    /**
+     * @test
+     */
+    public function deleting_a_task()
+    {
+        $this->signIn();
+
+        $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
+
+        $project->addTask('Test task');
+
+        $project->tasks[0]->delete();
+
+        $this->assertCount(3, $project->activity);
+    }
 }
