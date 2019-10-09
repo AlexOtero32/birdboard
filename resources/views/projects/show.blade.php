@@ -51,5 +51,6 @@
             @include('projects/card')
         </div>
     </div>
+    @include('projects/errors')
 </main>
 @endsection
