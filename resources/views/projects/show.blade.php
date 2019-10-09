@@ -49,6 +49,8 @@
         </div>
         <div class="md:w-1/4 px-3">
             @include('projects/card')
+
+            @include('projects/activity/card')
         </div>
     </div>
     @include('projects/errors')
