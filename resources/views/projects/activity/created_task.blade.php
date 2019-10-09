@@ -1,1 +1,1 @@
-Creaste una tarea
+Creaste {{ $activity->subject->body }}

@@ -1,1 +1,1 @@
-Marcaste una tarea incompleta
+Marcaste {{$activity->subject->body}} incompleta

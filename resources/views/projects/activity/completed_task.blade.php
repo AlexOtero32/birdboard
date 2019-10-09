@@ -1,1 +1,1 @@
-Completaste una tarea
+Completaste {{$activity->subject->body}}

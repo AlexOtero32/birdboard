@@ -36,7 +36,12 @@ class RecordActivityTest extends TestCase
         $project->update(['title' => 'Nuevo título']);
 
         $this->assertCount(2, $project->activity);
-        $this->assertEquals('updated', $project->activity->last()->description);
+
+        tap($project->activity->last(), function ($activity) {
+            $this->assertEquals('updated', $activity->description);
+
+            $expe
+        });
     }
 
     /**
@@ -51,6 +56,13 @@ class RecordActivityTest extends TestCase
         $project->addTask('Test task');
 
         $this->assertCount(2, $project->activity);
+
+        tap($project->activity->last(), function ($activity) {
+            $this->assertEquals('created_task', $activity->description);
+            $this->assertInstanceOf('App\Task', $activity->subject);
+            $this->assertEquals('Test task', $activity->subject->body);
+        });
+
         $this->assertEquals('created_task', $project->activity->last()->description);
     }
 
@@ -71,6 +83,13 @@ class RecordActivityTest extends TestCase
         ]);
 
         $this->assertCount(3, $project->activity);
+
+        tap($project->activity->last(), function ($activity) {
+            $this->assertEquals('completed_task', $activity->description);
+            $this->assertInstanceOf('App\Task', $activity->subject);
+            $this->assertEquals('Updated', $activity->subject->body);
+        });
+
         $this->assertEquals('completed_task', $project->activity->last()->description);
     }
 
