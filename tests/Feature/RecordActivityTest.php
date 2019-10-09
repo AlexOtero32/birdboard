@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class ActivityFeedTest extends TestCase
+class RecordActivityTest extends TestCase
 {
 
     use RefreshDatabase;
@@ -14,7 +14,7 @@ class ActivityFeedTest extends TestCase
     /**
      * @test
      */
-    public function creating_a_project_records_activity()
+    public function creating_a_project()
     {
         $this->signIn();
 
@@ -27,7 +27,7 @@ class ActivityFeedTest extends TestCase
     /**
      * @test
      */
-    public function updating_a_project_records_activity()
+    public function updating_a_project()
     {
         $this->signIn();
 
@@ -42,7 +42,7 @@ class ActivityFeedTest extends TestCase
     /**
      * @test
      */
-    public function creating_a_new_task_creates_activity()
+    public function creating_a_new_task()
     {
         $this->signIn();
 
@@ -57,7 +57,7 @@ class ActivityFeedTest extends TestCase
     /**
      * @test
      */
-    public function completing_a_task_creates_activity()
+    public function completing_a_task()
     {
         $this->signIn();
 
@@ -72,5 +72,34 @@ class ActivityFeedTest extends TestCase
 
         $this->assertCount(3, $project->activity);
         $this->assertEquals('completed_task', $project->activity->last()->description);
+    }
+
+    /**
+     * @test
+     */
+    public function incompleting_a_task()
+    {
+        $this->signIn();
+
+        $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
+
+        $project->addTask('Test task');
+
+        $this->patch($project->tasks[0]->path(), [
+            'body' => 'Updated',
+            'completed' => true
+        ]);
+
+        $this->assertCount(3, $project->activity);
+
+        $this->patch($project->tasks[0]->path(), [
+            'body' => 'Updated',
+            'completed' => false
+        ]);
+
+        $project->refresh();
+
+        $this->assertCount(4, $project->activity);
+        $this->assertEquals('incompleted_task', $project->activity->last()->description);
     }
 }
