@@ -2,13 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Project;
 use App\Task;
+use App\Project;
+use Illuminate\Routing\Redirector;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Auth\Access\AuthorizationException;
 
-class ProjectTasksController extends Controller
-{
-    public function store(Project $project)
-    {
+/**
+ * Class ProjectTasksController
+ *
+ * @package App\Http\Controllers
+ */
+class ProjectTasksController extends Controller {
+    /**
+     * @param Project $project
+     *
+     * @return RedirectResponse|Redirector
+     * @throws AuthorizationException
+     */
+    public function store(Project $project) {
         $this->authorize('update', $project);
 
         request()->validate(['body' => 'required']);
@@ -18,8 +30,13 @@ class ProjectTasksController extends Controller
         return redirect($project->path());
     }
 
-    public function update(Task $task)
-    {
+    /**
+     * @param Task $task
+     *
+     * @return RedirectResponse|Redirector
+     * @throws AuthorizationException
+     */
+    public function update(Task $task) {
         $this->authorize('update', $task->project);
 
         $task->update(request()->validate(['body' => 'required']));

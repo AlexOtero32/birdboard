@@ -3,49 +3,69 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Task extends Model
-{
+/**
+ * Class Task
+ *
+ * @package App
+ */
+class Task extends Model {
+    use RecordsActivity;
+
+    /**
+     * Recordable events.
+     *
+     * @var array
+     */
+    protected static $recordableEvents = ['created', 'deleted'];
+
+    /**
+     * @var array
+     */
     protected $guarded = [];
 
+    /**
+     * @var array
+     */
     protected $touches = ['project'];
 
+    /**
+     * @var array
+     */
     protected $casts = [
-        'completed' => 'boolean'
+        'completed' => 'boolean',
     ];
 
-    public function project()
-    {
+    /**
+     * The project for this task.
+     *
+     * @return BelongsTo
+     */
+    public function project() {
         return $this->belongsTo('App\Project');
     }
 
-    public function path()
-    {
+    /**
+     * @return string
+     */
+    public function path() {
         return "/tasks/{$this->id}";
     }
 
-    public function complete()
-    {
-        $this->update(['completed' => true]);
-        $this->recordActivity('completed_task');
-    }
-
-    public function incomplete()
-    {
+    /**
+     * Incompletes the task.
+     */
+    public function incomplete() {
         $this->update(['completed' => false]);
         $this->recordActivity('incompleted_task');
     }
 
-    public function activity()
-    {
-        return $this->morphMany(Activity::class, 'subject')->latest();
-    }
-
-    public function recordActivity(string $description)
-    {
-        $this->activity()->create([
-            'project_id' => $this->project_id,
-            'description' => $description
-        ]);
+    /**
+     * Completes the task.
+     */
+    public function complete() {
+        $this->update(['completed' => true]);
+        $this->recordActivity('completed_task');
     }
 }

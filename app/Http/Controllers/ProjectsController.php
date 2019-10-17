@@ -3,25 +3,45 @@
 namespace App\Http\Controllers;
 
 use App\Project;
+use Illuminate\View\View;
+use Illuminate\Routing\Redirector;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Auth\Access\AuthorizationException;
 
-class ProjectsController extends Controller
-{
-    public function index()
-    {
+/**
+ * Class ProjectsController
+ *
+ * @package App\Http\Controllers
+ */
+class ProjectsController extends Controller {
+    /**
+     * @return Factory|View
+     *
+     */
+    public function index() {
         $projects = auth()->user()->projects;
 
         return view('projects.index', ['projects' => $projects]);
     }
 
-    public function show(Project $project)
-    {
+    /**
+     * @param Project $project
+     *
+     * @return Factory|View
+     * @throws AuthorizationException
+     */
+
+    public function show(Project $project) {
         $this->authorize('update', $project);
 
         return view('projects.show', compact('project'));
     }
 
-    public function store()
-    {
+    /**
+     * @return RedirectResponse|Redirector
+     */
+    public function store() {
 
         $attributes = $this->validateRequest();
 
@@ -30,13 +50,31 @@ class ProjectsController extends Controller
         return redirect($project->path());
     }
 
-    public function create()
-    {
+    /**
+     * @return mixed
+     */
+    protected function validateRequest() {
+        return request()->validate([
+            'title' => 'sometimes|required',
+            'description' => 'sometimes|required|max:255',
+            'notes' => 'nullable|min:3|max:255',
+        ]);
+    }
+
+    /**
+     * @return Factory|View
+     */
+    public function create() {
         return view('projects.create');
     }
 
-    public function update(Project $project)
-    {
+    /**
+     * @param Project $project
+     *
+     * @return RedirectResponse|Redirector
+     * @throws AuthorizationException
+     */
+    public function update(Project $project) {
         $this->authorize('update', $project);
 
         $attributes = $this->validateRequest();
@@ -46,17 +84,12 @@ class ProjectsController extends Controller
         return redirect($project->path());
     }
 
-    public function edit(Project $project)
-    {
+    /**
+     * @param Project $project
+     *
+     * @return Factory|View
+     */
+    public function edit(Project $project) {
         return view('projects.edit', compact('project'));
-    }
-
-    protected function validateRequest()
-    {
-        return request()->validate([
-            'title' => 'sometimes|required',
-            'description' => 'sometimes|required|max:255',
-            'notes' => 'nullable|min:3|max:255'
-        ]);
     }
 }

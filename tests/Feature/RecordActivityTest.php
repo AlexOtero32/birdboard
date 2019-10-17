@@ -2,20 +2,17 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class RecordActivityTest extends TestCase
-{
+class RecordActivityTest extends TestCase {
 
     use RefreshDatabase;
 
     /**
      * @test
      */
-    public function creating_a_project()
-    {
+    public function creating_a_project() {
         $this->signIn();
 
         $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
@@ -23,7 +20,7 @@ class RecordActivityTest extends TestCase
         $this->assertCount(1, $project->activity);
 
         tap($project->activity->last(), function ($activity) {
-            $this->assertEquals('created', $activity->description);
+            $this->assertEquals('created_project', $activity->description);
 
             $this->assertEquals(null, $activity->changes);
         });
@@ -32,8 +29,7 @@ class RecordActivityTest extends TestCase
     /**
      * @test
      */
-    public function updating_a_project()
-    {
+    public function updating_a_project() {
         $this->signIn();
 
         $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
@@ -45,11 +41,11 @@ class RecordActivityTest extends TestCase
         $this->assertCount(2, $project->activity);
 
         tap($project->activity->last(), function ($activity) use ($originalTitle) {
-            $this->assertEquals('updated', $activity->description);
+            $this->assertEquals('updated_project', $activity->description);
 
             $expected = [
                 'before' => ['title' => $originalTitle],
-                'after' => ['title' => 'Nuevo título']
+                'after' => ['title' => 'Nuevo título'],
             ];
 
             $this->assertEquals($expected, $activity->changes);
@@ -59,8 +55,7 @@ class RecordActivityTest extends TestCase
     /**
      * @test
      */
-    public function creating_a_new_task()
-    {
+    public function creating_a_new_task() {
         $this->signIn();
 
         $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
@@ -81,8 +76,7 @@ class RecordActivityTest extends TestCase
     /**
      * @test
      */
-    public function completing_a_task()
-    {
+    public function completing_a_task() {
         $this->signIn();
 
         $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
@@ -91,7 +85,7 @@ class RecordActivityTest extends TestCase
 
         $this->patch($project->tasks[0]->path(), [
             'body' => 'Updated',
-            'completed' => true
+            'completed' => true,
         ]);
 
         $this->assertCount(3, $project->activity);
@@ -108,8 +102,7 @@ class RecordActivityTest extends TestCase
     /**
      * @test
      */
-    public function incompleting_a_task()
-    {
+    public function incompleting_a_task() {
         $this->signIn();
 
         $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
@@ -118,14 +111,14 @@ class RecordActivityTest extends TestCase
 
         $this->patch($project->tasks[0]->path(), [
             'body' => 'Updated',
-            'completed' => true
+            'completed' => true,
         ]);
 
         $this->assertCount(3, $project->activity);
 
         $this->patch($project->tasks[0]->path(), [
             'body' => 'Updated',
-            'completed' => false
+            'completed' => false,
         ]);
 
         $project->refresh();
@@ -137,8 +130,7 @@ class RecordActivityTest extends TestCase
     /**
      * @test
      */
-    public function deleting_a_task()
-    {
+    public function deleting_a_task() {
         $this->signIn();
 
         $project = factory('App\Project')->create(['owner_id' => auth()->id()]);

@@ -3,54 +3,75 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Project extends Model
-{
+/**
+ * Class Project
+ *
+ * @package App
+ */
+class Project extends Model {
+    use RecordsActivity;
+
+    /**
+     * @var array
+     */
+    public $old = [];
+    /**
+     * @var array
+     */
     protected $guarded = [];
 
-    public $old = [];
 
-    public function path()
-    {
+    /**
+     * The path to the project.
+     *
+     * @return string
+     */
+    public function path() {
         return "/projects/{$this->id}";
     }
 
-    public function owner()
-    {
-        return $this->belongsTo(User::class);
-    }
 
-    public function tasks()
-    {
-        return $this->hasMany(Task::class);
+    /**
+     * The user relationship.
+     *
+     * @return BelongsTo
+     */
+    public function owner() {
+        return $this->belongsTo(User::class);
     }
 
     /**
      * Add a task to the project.
      *
-     * @param  string $body
-     * @return \Illuminate\Database\Eloquent\Model
+     * @param string $body
+     *
+     * @return Model
      */
-    public function addTask($body)
-    {
+    public function addTask($body) {
         $task = $this->tasks()->create(compact('body'));
 
         return $task;
     }
 
-    public function activity()
-    {
+    /**
+     * Get the project tasks.
+     *
+     * @return HasMany
+     */
+    public function tasks() {
+        return $this->hasMany(Task::class);
+    }
+
+    /**
+     * Get the project activity.
+     *
+     * @return HasMany
+     */
+    public function activity() {
         return $this->hasMany(Activity::class)->latest();
     }
 
-    public function recordActivity(string $description)
-    {
-        $this->activity()->create([
-            'description' => $description,
-            'changes' => $description === 'updated' ? [
-                'before' => array_diff($this->old, $this->getAttributes()),
-                'after' => $this->getChanges()
-            ] : null
-        ]);
-    }
 }
