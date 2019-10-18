@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -59,7 +58,7 @@ class Project extends Model {
     /**
      * Get the project tasks.
      *
-     * @return HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function tasks() {
         return $this->hasMany(Task::class);
@@ -68,10 +67,21 @@ class Project extends Model {
     /**
      * Get the project activity.
      *
-     * @return HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function activity() {
         return $this->hasMany(Activity::class)->latest();
+    }
+
+    /**
+     * @param \App\User $user
+     */
+    public function invite(User $user) {
+        return $this->members()->attach($user);
+    }
+
+    public function members() {
+        return $this->belongsToMany(User::class, 'project_members');
     }
 
 }
