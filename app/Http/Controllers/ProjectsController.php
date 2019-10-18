@@ -20,7 +20,7 @@ class ProjectsController extends Controller {
      *
      */
     public function index() {
-        $projects = auth()->user()->projects;
+        $projects = auth()->user()->availableProjects();
 
         return view('projects.index', ['projects' => $projects]);
     }

@@ -218,4 +218,12 @@ class ManageProjectsTest extends TestCase {
         $this->delete($project->path())
             ->assertStatus(403);
     }
+
+    /** @test */
+    public function a_user_can_view_all_projects_they_have_been_invited_to_on_their_dashboard() {
+        $project = tap(factory('App\Project')->create())->invite($this->signIn());
+
+        $this->get('/projects')
+            ->assertSee($project->title);
+    }
 }
