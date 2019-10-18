@@ -1,1 +1,1 @@
-Marcaste {{$activity->subject->body}} incompleta
+{{ $activity->user->name }} marcó {{$activity->subject->body}} incompleta

@@ -3,20 +3,19 @@
 namespace Tests\Feature;
 
 use App\Project;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class ManageProjectsTest extends TestCase
-{
+class ManageProjectsTest extends TestCase {
 
     use WithFaker, RefreshDatabase;
 
     /**
      * @test
      */
-    public function guests_cannot_create_projects()
-    {
+    public function guests_cannot_create_projects() {
         $attributes = factory('App\Project')->raw(['owner_id' => null]);
 
         $this->post('/projects', $attributes)->assertRedirect('/login');
@@ -27,16 +26,14 @@ class ManageProjectsTest extends TestCase
     /**
      * @test
      */
-    public function guests_cannot_view_projects_list()
-    {
+    public function guests_cannot_view_projects_list() {
         $this->get('/projects')->assertRedirect('/login');
     }
 
     /**
      * @test
      */
-    public function guests_cannot_view_single_projects()
-    {
+    public function guests_cannot_view_single_projects() {
         $project = factory('App\Project')->create();
 
         $this->get($project->path())->assertRedirect('/login');
@@ -45,8 +42,7 @@ class ManageProjectsTest extends TestCase
     /**
      * @test
      */
-    public function guests_cannot_edit_projects()
-    {
+    public function guests_cannot_edit_projects() {
         $project = factory('App\Project')->create();
 
         $this->get("{$project->path()}/edit")->assertRedirect('/login');
@@ -56,8 +52,7 @@ class ManageProjectsTest extends TestCase
      * @test
      *
      */
-    public function a_user_can_create_a_project()
-    {
+    public function a_user_can_create_a_project() {
         $this->signIn();
 
         $this->get('/projects/create')->assertStatus(200);
@@ -65,7 +60,7 @@ class ManageProjectsTest extends TestCase
         $attributes = [
             'title' => $this->faker->sentence,
             'description' => $this->faker->sentence,
-            'notes' => 'General notes here'
+            'notes' => 'General notes here',
         ];
 
         $response = $this->post('/projects', $attributes);
@@ -86,8 +81,7 @@ class ManageProjectsTest extends TestCase
      * @test
      */
 
-    public function a_project_requires_a_title()
-    {
+    public function a_project_requires_a_title() {
         $this->signIn();
 
         $attributes = factory('App\Project')->raw(['title' => '']);
@@ -98,8 +92,7 @@ class ManageProjectsTest extends TestCase
     /**
      * @test
      */
-    public function a_project_requires_a_description()
-    {
+    public function a_project_requires_a_description() {
         $this->signIn();
 
         $attributes = factory('App\Project')->raw(['description' => '']);
@@ -110,8 +103,7 @@ class ManageProjectsTest extends TestCase
     /**
      * @test
      */
-    public function an_user_can_view_their_project()
-    {
+    public function an_user_can_view_their_project() {
         $this->signIn();
 
         $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
@@ -124,8 +116,7 @@ class ManageProjectsTest extends TestCase
     /**
      * @test
      */
-    public function an_user_cannot_view_the_projects_of_others()
-    {
+    public function an_user_cannot_view_the_projects_of_others() {
         $this->signIn();
 
         $project = factory('App\Project')->create();
@@ -136,22 +127,20 @@ class ManageProjectsTest extends TestCase
     /**
      * @test
      */
-    public function an_user_cannot_update_the_projects_of_others()
-    {
+    public function an_user_cannot_update_the_projects_of_others() {
         $this->signIn();
 
         $project = factory('App\Project')->create();
 
         $this->patch($project->path(), [
-            'notes' => 'Hello world'
+            'notes' => 'Hello world',
         ])->assertStatus(403);
     }
 
     /**
      * @test
      */
-    public function a_project_belongs_to_an_owner()
-    {
+    public function a_project_belongs_to_an_owner() {
         $project = factory('App\Project')->create();
 
         $this->assertInstanceOf('App\User', $project->owner);
@@ -160,8 +149,7 @@ class ManageProjectsTest extends TestCase
     /**
      * @test
      */
-    public function a_user_can_update_a_project()
-    {
+    public function a_user_can_update_a_project() {
         $this->withoutExceptionHandling();
 
         $this->signIn();
@@ -173,7 +161,7 @@ class ManageProjectsTest extends TestCase
         $attributes = [
             'title' => 'Nuevo título',
             'description' => 'Nueva descripcion',
-            'notes' => 'Hello world'
+            'notes' => 'Hello world',
         ];
 
         $this->patch($project->path(), $attributes)
@@ -185,8 +173,7 @@ class ManageProjectsTest extends TestCase
     /**
      * @test
      */
-    public function a_user_can_update_a_projects_notes()
-    {
+    public function a_user_can_update_a_projects_notes() {
         $this->signIn();
 
         $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
@@ -194,12 +181,41 @@ class ManageProjectsTest extends TestCase
         $this->get("{$project->path()}/edit")->assertOk();
 
         $attributes = [
-            'notes' => 'Hello world'
+            'notes' => 'Hello world',
         ];
 
         $this->patch($project->path(), $attributes)
             ->assertRedirect($project->path());
 
         $this->assertDatabaseHas('projects', $attributes);
+    }
+
+    /** @test */
+    public function a_user_can_delete_a_project() {
+        $this->signIn();
+
+        $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
+
+        $this->delete($project->path())
+            ->assertRedirect('/projects');
+
+        $this->assertDatabaseMissing('projects', $project->only('id'));
+    }
+
+    /** @test */
+    public function unauthorized_users_cannot_delete_projects() {
+        $this->signIn();
+
+        $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
+
+        Auth::logout();
+
+        $this->delete($project->path())
+            ->assertRedirect('/login');
+
+        $this->signIn();
+
+        $this->delete($project->path())
+            ->assertStatus(403);
     }
 }

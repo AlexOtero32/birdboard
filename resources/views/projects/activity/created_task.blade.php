@@ -1,1 +1,1 @@
-Creaste {{ $activity->subject->body }}
+{{ $activity->user->name }} creó {{ $activity->subject->body }}

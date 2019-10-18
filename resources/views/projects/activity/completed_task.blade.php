@@ -1,1 +1,1 @@
-Completaste {{$activity->subject->body}}
+{{ $activity->user->name }} completó {{$activity->subject->body}}

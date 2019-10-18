@@ -92,4 +92,12 @@ class ProjectsController extends Controller {
     public function edit(Project $project) {
         return view('projects.edit', compact('project'));
     }
+
+    public function destroy(Project $project) {
+        $this->authorize('update', $project);
+
+        $project->delete();
+
+        return redirect('/projects');
+    }
 }
