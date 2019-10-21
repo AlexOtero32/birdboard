@@ -3,7 +3,7 @@
 @section('content')
     <header class="flex items-center mb-3 py-4">
         <div class="flex justify-between w-full items-center">
-            <p class="text-gray-600 text-sm font-normal"><a href="/projects">
+            <p class="text-default text-sm font-normal"><a href="/projects">
                     Mis proyectos
                 </a>
                 / {{ $project->title }}
@@ -30,7 +30,7 @@
         <div class="md:flex -m-3">
             <div class="md:w-3/4 px-3">
                 <div class="mb-6">
-                    <h2 class="text-gray-700 text-lg font-normal mb-3">Tareas</h2>
+                    <h2 class="text-default text-lg font-normal mb-3">Tareas</h2>
                     @forelse ($project->tasks as $task)
                         <div class="card px-4 mb-3">
                             <form action="{{ $task->path() }}" method="post">
@@ -38,7 +38,7 @@
                                 @csrf
                                 <div class="flex">
                                     <input type="text" name="body" value="{{ $task->body }}"
-                                           class="w-full bg-transparent {{$task->completed ? 'text-gray-400' : ''}}">
+                                           class="w-full bg-transparent {{$task->completed ? 'text-default' : ''}}">
                                     <input type="checkbox" name="completed"
                                            onChange="this.form.submit()" {{$task->completed ? 'checked' : ''}} />
                                 </div>
@@ -56,7 +56,7 @@
                     </div>
                 </div>
                 <div class="mb-6">
-                    <h2 class="text-gray-700 text-lg font-normal mb-3">Notas generales</h2>
+                    <h2 class="text-default text-lg font-normal mb-3">Notas generales</h2>
                     <form action="{{ $project->path() }}" method="POST">
                         @method('PATCH')
                         @csrf
