@@ -93,8 +93,14 @@ class ProjectsController extends Controller {
         return view('projects.edit', compact('project'));
     }
 
+    /**
+     * @param \App\Project $project
+     *
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function destroy(Project $project) {
-        $this->authorize('update', $project);
+        $this->authorize('manage', $project);
 
         $project->delete();
 
