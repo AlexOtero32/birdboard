@@ -70,6 +70,10 @@
                 @include('projects/card')
 
                 @include('projects/activity/card')
+
+                @can('manage', $project)
+                    @include('projects/invite')
+                @endcan
             </div>
         </div>
         @include('projects/errors')

@@ -31,8 +31,13 @@ class InvitationsTest extends TestCase {
 
         $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
 
-        $this->post("{$project->path()}/invitations", ['email' => 'notauser@email.com'])
-            ->assertSessionHasErrors(['email' => 'The user you are inviting must have a Birdboard account']);
+        $this->actingAs($project->owner)
+            ->post($project->path() . '/invitations', [
+                'email' => 'notauser@example.com',
+            ])
+            ->assertSessionHasErrors([
+                'email' => 'The user you are inviting must have a Birdboard account',
+            ], null, 'invitations');
     }
 
     /** @test */
@@ -56,6 +61,13 @@ class InvitationsTest extends TestCase {
         $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
 
         $user = factory('App\User')->create();
+
+        $this->actingAs($user)
+            ->post("{$project->path()}/invitations",
+                ['email' => 'someemail@example.com'])
+            ->assertStatus(403);
+
+        $project->invite($user);
 
         $this->actingAs($user)
             ->post("{$project->path()}/invitations",
