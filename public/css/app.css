@@ -10427,6 +10427,7 @@ video {
   --card-background-color: white;
   --button-background-color: #47CDFF;
   --header-background-color: white;
+  --text-default-color: #718096;
 }
 
 .theme-dark {
@@ -10434,7 +10435,7 @@ video {
   --card-background-color: #1F2027;
   --button-background-color: #59B6F9;
   --header-background-color: #1F2027;
-  --text-default-color: white;
+  --text-default-color: #e2e8f0;
 }
 
 @media (min-width: 640px) {

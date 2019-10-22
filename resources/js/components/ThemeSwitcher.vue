@@ -3,7 +3,7 @@
         <button
             :class="{'border-blue': selectedTheme == theme}"
             :style="{backgroundColor: color}"
-            @click="selectedTheme = 'theme-light'"
+            @click="selectedTheme = theme"
             class="rounded-full w-4 h-4 bg-gray-300 border mr-2"
             v-for="(color, theme) in themes"
         ></button>
@@ -17,7 +17,7 @@
                 themes: {
                     'theme-light': '#f5f6f9',
                     'theme-dark': '#222',
-                }
+                },
                 selectedTheme: 'theme-light'
             }
         },
@@ -26,7 +26,7 @@
         },
         watch: {
             selectedTheme() {
-                document.body.className.replace(/theme-\w+/, this.selectedTheme);
+                document.body.className = document.body.className.replace(/theme-\w+/, this.selectedTheme);
 
                 localStorage.setItem('theme', this.selectedTheme);
             }
