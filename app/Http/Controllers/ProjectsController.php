@@ -39,14 +39,18 @@ class ProjectsController extends Controller {
     }
 
     /**
-     * @return RedirectResponse|Redirector
+     * Persist a new project.
+     *
+     * @return mixed
      */
     public function store() {
-
-        $attributes = $this->validateRequest();
-
-        $project = auth()->user()->projects()->create($attributes);
-
+        $project = auth()->user()->projects()->create($this->validateRequest());
+        if ( $tasks = request('tasks') ) {
+            $project->addTasks($tasks);
+        }
+        if ( request()->wantsJson() ) {
+            return ['message' => $project->path()];
+        }
         return redirect($project->path());
     }
 
