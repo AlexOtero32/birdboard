@@ -17,4 +17,40 @@
             <div>No hay proyectos</div>
         @endforelse
     </div>
+    <modal name="new-project" classes="p-10 bg-card rounded-lg" height="auto">
+        <h1 class="font-normal mb-16 text-center text-2xl">Crea algo nuevo</h1>
+        <div class="flex">
+            <div class="flex-1 mr-4">
+                <div class="mb-4">
+                    <label for="title" class="text-sm block mb-2">Título</label>
+                    <input type="text" name="title"
+                           class="block border p-2 border-gray-300 text-sm w-full rounded"/>
+                </div>
+                <div class="mb-4">
+                    <label for="description" class="text-sm block mb-2">Descripción</label>
+                    <textarea type="text" name="description"
+                              class="block border p-2 border-gray-300 text-sm w-full rounded">
+                    </textarea>
+                </div>
+            </div>
+            <div class="flex-1 ml-4">
+                <div class="mb-4">
+                    <label for="task" class="text-sm block mb-2">Crear tareas</label>
+                    <input
+                        type="text" name="task"
+                        class="block border p-2 border-gray-300 text-sm w-full rounded"
+                        placeholder="Primera tarea"
+                    />
+                </div>
+                <button>
+                    <span>Añadir nueva tarea</span>
+                </button>
+            </div>
+        </div>
+        <footer class="flex justify-end">
+            <button class="mr-4 is-outline">Crear proyecto</button>
+            <button @click="$modal.hide('new-project')">Cancelar</button>
+        </footer>
+    </modal>
+    <a href="" @click.prevent="$modal.show('new-project')">Ver modal</a>
 @endsection
